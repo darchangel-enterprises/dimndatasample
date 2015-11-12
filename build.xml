@@ -1,0 +1,58 @@
+<project>
+    <path id="classpath">
+        <fileset dir="lib" includes="**/*.jar"/>
+        <pathelement path="src/model"/>
+        <pathelement path="src"/>
+    </path>
+    
+    <target name="clean">
+  <delete dir="build"/>
+  <delete dir="report"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="classpath"/>
+    </target>
+
+    <target name="jar">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/SimpleApp.jar" basedir="build/classes"/>
+        <copy todir="lib" file="build/jar/SimpleApp.jar"/>
+    </target>
+
+    <target name="run" depends="jar">
+        <java fork="true" classname="MainApp" failonerror="yes">
+            <classpath>
+               <path refid="classpath"/>
+                <path id="application" location="build/jar/SimpleApp.jar"/>
+                <pathelement path="lib/mysql-connector-java-5.1.7-bin.jar"/>
+            </classpath>     
+             <arg value="deleteServer"/>
+        </java>
+    </target>
+
+    <target name="junit" depends="jar">
+      <mkdir dir="report"/> 
+      <junit printsummary="yes" haltonerror="yes">
+          <classpath>
+              <path refid="classpath"/>
+              <path id="application" location="build/jar/SimpleApp.jar"/>
+         </classpath>   
+         <formatter type="plain"/> 
+        <batchtest fork="yes" todir="report">           
+           <fileset dir="src" includes="**/*Test*.java"/>
+          </batchtest>
+      </junit>
+    </target>
+
+    <target name="junitreport">
+        <junitreport todir="report">
+            <fileset dir="report" includes="TEST-*.txt"/>
+            <report todir="report"/>
+        </junitreport>
+    </target>
+
+    <target name="main" depends="clean, compile, jar, junit, run"/>
+</project>
+

@@ -1,0 +1,4 @@
+<server>
+  <id>1</id>
+  <name>MyServerName</name>
+</server>
